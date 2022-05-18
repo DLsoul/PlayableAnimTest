@@ -41,6 +41,10 @@ public class TestState : MonoBehaviour, IEntity
 		return AnimCtrl.GetCurClipName().Equals(name);
 	}
 
+	private void FixedUpdate()
+	{
+
+	}
 
 	void Move(float h, float v)
 	{
