@@ -88,7 +88,7 @@ public class AnimState
 		}
 
 		//Ä¬ÈÏÇÐ»»
-		if (curtick > AnimClip.length)
+		if (curtick >= AnimClip.length)
 		{
 			if (!AnimClip.isLooping)
 			{
