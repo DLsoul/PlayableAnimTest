@@ -60,14 +60,14 @@
     <Compile Include="Assets\Scripts\TestBehavior.cs" />
     <Compile Include="Assets\TestState.cs" />
     <Compile Include="Assets\Scripts\Playable\PlayableAnimCtrl.cs" />
+    <Compile Include="Assets\Scripts\ControlSystems\InputSystem.cs" />
+    <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Entity.cs" />
     <Compile Include="Assets\Scripts\Playable\AnalysisTool.cs" />
+    <Compile Include="Assets\Scripts\ControlSystems\GravitySystem.cs" />
     <Compile Include="Assets\Scripts\ControlSystems\DealDamageSystem.cs" />
     <Compile Include="Assets\Scripts\Playable\TriggerAction.cs" />
     <Compile Include="Assets\Scripts\Listener.cs" />
-    <Compile Include="Assets\Scripts\ControlSystems\InputSystem.cs" />
-    <Compile Include="Assets\Scripts\ControlSystems\GravitySystem.cs" />
-    <Compile Include="Assets\Scripts\CameraFollow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

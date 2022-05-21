@@ -22,6 +22,7 @@ public class FrameTriggerData
 
 public class AnimStateTransition
 {
+	public float changTime;
 	public string target;
 }
 
@@ -36,6 +37,8 @@ public class AnimState
 	private AnimationClip animClip;
 	public AnimationClip AnimClip { get { if (animClip == null) { animClip = playableClip.GetAnimationClip(); } return animClip; } }
 
+	public PlayableAnimCtrl AnimCtrl { get { return baseEntity.AnimCtrl; } }
+	public AnimBehaviour Behaviour { get { return AnimCtrl.behaviour; } }
 	void ResetTrigger()
 	{
 		if (triggers != null)
@@ -87,16 +90,36 @@ public class AnimState
 			}
 		}
 
-		//Ä¬ÈÏÇÐ»»
-		if (curtick >= AnimClip.length)
-		{
-			if (!AnimClip.isLooping)
-			{
-				baseEntity.AnimCtrl.Play(transition?.target ?? null);
-			}
-			else { ResetTrigger(); }
-		}
 
+		if (!AnimClip.isLooping)
+		{
+			//¶ÓÁÐ²¥·Å
+			if (Behaviour.inQue)
+			{
+				var que = Behaviour.CurQue;
+				if (
+					(que.changNextTime != 0 && curtick >= que.changNextTime)
+					|| curtick >= AnimClip.length)
+				{
+					Behaviour.QueNext();
+				}
+				return;
+			}
+
+			//ÇÐ»»
+			if (transition != null && transition.changTime != 0 && curtick >= transition.changTime)
+			{
+				AnimCtrl.Play(transition.target);
+				return;
+			}
+
+			//Ä¬ÈÏÇÐ»»
+			if (curtick >= AnimClip.length) { AnimCtrl.Play(transition?.target ?? null); }
+		}
+		else
+		{
+			ResetTrigger();
+		}
 	}
 }
 
@@ -148,6 +171,12 @@ public class AnimBehaviour : PlayableBehaviour
 	bool inFading;
 	float fadeSpeed = 10f;
 	//======================
+
+	private PlayQueue[] animQue;
+	private int queIndex;
+	public bool inQue;
+	public bool QueEnd { get { return animQue == null || queIndex >= animQue.Length; } }
+	public PlayQueue CurQue { get { return animQue[queIndex]; } }
 	public override void OnPlayableCreate(Playable playable)
 	{
 		base.OnPlayableCreate(playable);
@@ -195,6 +224,12 @@ public class AnimBehaviour : PlayableBehaviour
 
 	public void Play(string _name = null, float startTime = 0)
 	{
+		inQue = false;
+		ActPlay(_name, startTime);
+	}
+
+	private void ActPlay(string _name = null, float startTime = 0)
+	{
 		mixer.SetInputWeight(stateMachine.lastState.playableClip, 0);
 		stateMachine.ChangeState(_name);
 		curClipWeight = 1 - curClipWeight;
@@ -202,6 +237,26 @@ public class AnimBehaviour : PlayableBehaviour
 		inFading = true;
 
 		Debug.Log($"cur: {  stateMachine.currentState.AnimClip.name}");
+	}
+
+	public void PlayQueue(PlayQueue[] que)
+	{
+		animQue = que;
+		queIndex = -1;
+		inQue = true;
+		QueNext();
+	}
+
+	public void QueNext()
+	{
+		queIndex++;
+		if (QueEnd)
+		{
+			Debug.Log("que end");
+			Play();
+			return;
+		}
+		ActPlay(CurQue.name);
 	}
 
 	private void UpdateBlendAnim()
@@ -220,7 +275,7 @@ public class PlayableAnimCtrl
 {
 	public Animator animator;
 	public PlayableGraph graph;
-	private AnimBehaviour behaviour;
+	public AnimBehaviour behaviour;
 	public IEntity BaseEntity { get; set; }
 	public void Init(Animator _animator, IEntity _entity)
 	{
@@ -239,6 +294,11 @@ public class PlayableAnimCtrl
 		behaviour.Play(_name, _startTime);
 	}
 
+	public void PlayQueue(PlayQueue[] que)
+	{
+		behaviour.PlayQueue(que);
+	}
+
 	public AnimState GetCurState()
 	{
 		return behaviour.stateMachine.currentState;
@@ -248,4 +308,10 @@ public class PlayableAnimCtrl
 	{
 		return GetCurState().AnimClip.name;
 	}
+}
+
+public struct PlayQueue
+{
+	public string name;
+	public float changNextTime;
 }

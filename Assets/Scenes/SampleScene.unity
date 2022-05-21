@@ -167,6 +167,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &49164766 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4598017369371754, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
+  m_PrefabInstance: {fileID: 1745172254}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &56147795
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,7 +343,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 376684198}
   runSpeed: 5
-  doadgeForce: 100
+  doadgeSpeed: 0
+  jumpSpeed: 0
+  checkLandNode: {fileID: 0}
+  IsGround: 0
 --- !u!136 &376684196
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -384,6 +392,10 @@ PrefabInstance:
     - target: {fileID: 1707516602866390, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
       propertyPath: m_Name
       value: Modeling_Grrrru_Man (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1707516602866390, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4089976883847762, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2191,7 +2203,7 @@ GameObject:
   - component: {fileID: 909928202}
   - component: {fileID: 909928201}
   - component: {fileID: 909928200}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2603,6 +2615,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4408912607399958, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4408912607399958, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -2713,7 +2729,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1745172257}
   runSpeed: 5
-  doadgeForce: 500
+  doadgeSpeed: 20
+  jumpSpeed: 20
+  checkLandNode: {fileID: 49164766}
+  IsGround: 0
 --- !u!4 &1745172259 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4408912607399958, guid: fb234b51d21c2be4489978076f1f6064, type: 3}
@@ -2761,6 +2780,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6156337c13bffe4bb39455657471ad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravity: 10
-  gravityScale: 1
+  gravity: 9.8
+  gravityScale: 4
   useGravity: 1

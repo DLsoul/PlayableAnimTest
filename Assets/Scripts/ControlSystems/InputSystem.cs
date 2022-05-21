@@ -26,12 +26,16 @@ public class InputSystem : MonoBehaviour
 		var hori = Input.GetAxis("Horizontal");
 		var verti = Input.GetAxis("Vertical");
 		inputDir = new Vector2(hori, verti);
-		OnAxis?.Invoke(hori, verti);
 
 		if (Input.GetKeyDown(KeyCode.J)) { OnXKeyDown?.Invoke(); }
 		if (Input.GetKeyDown(KeyCode.K)) { OnYKeyDown?.Invoke(); }
 		if (Input.GetKeyDown(KeyCode.U)) { OnAKeyDown?.Invoke(); }
 		if (Input.GetKeyDown(KeyCode.I)) { OnBKeyDown?.Invoke(); }
+	}
+
+	private void FixedUpdate()
+	{
+		OnAxis?.Invoke(inputDir.x, inputDir.y);
 	}
 }
 

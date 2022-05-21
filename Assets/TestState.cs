@@ -9,10 +9,16 @@ public class TestState : MonoBehaviour, IEntity
 	public PlayableAnimCtrl AnimCtrl { get; private set; }
 
 	public float runSpeed;
-	public float doadgeForce;
+	public float doadgeSpeed;
+	public float jumpSpeed;
+	public Transform checkLandNode;
+	private CapsuleCollider col;
+
+	public bool IsGround;
 	// Start is called before the first frame update
 	void Start()
 	{
+		col = GetComponent<CapsuleCollider>();
 		rb = GetComponent<Rigidbody>();
 		rb.useGravity = false;
 		AnimCtrl = new PlayableAnimCtrl();
@@ -25,25 +31,23 @@ public class TestState : MonoBehaviour, IEntity
 		InputSystem.Instance.OnXKeyDown += AttackX;
 		InputSystem.Instance.OnYKeyDown += AttackY;
 		InputSystem.Instance.OnAKeyDown += Doadge;
+		InputSystem.Instance.OnBKeyDown += Jump;
 	}
 
 	bool m_isRuning { get { return AnimCtrl.GetCurClipName().Equals("Run_ver_A"); } }
+	bool m_animIsJumping { get { return AnimCtrl.GetCurClipName().Equals("Jump_Loop"); } }
 	private void OnDisable()
 	{
 		InputSystem.Instance.OnAxis -= Move;
 		InputSystem.Instance.OnXKeyDown -= AttackX;
 		InputSystem.Instance.OnYKeyDown -= AttackY;
 		InputSystem.Instance.OnAKeyDown -= Doadge;
+		InputSystem.Instance.OnBKeyDown -= Jump;
 	}
 
 	bool CheckAnim(string name)
 	{
 		return AnimCtrl.GetCurClipName().Equals(name);
-	}
-
-	private void FixedUpdate()
-	{
-
 	}
 
 	void Move(float h, float v)
@@ -57,7 +61,7 @@ public class TestState : MonoBehaviour, IEntity
 				AnimCtrl.Play("Run_ver_A");
 			}
 			transform.localEulerAngles = new Vector3(0, h < 0 ? 180 : 0, 0);
-			if (m_isRuning)
+			if (m_isRuning || !IsGround)
 			{
 				hSpeed = h > 0 ? runSpeed : -runSpeed;
 			}
@@ -104,11 +108,23 @@ public class TestState : MonoBehaviour, IEntity
 
 		var dir = InputSystem.Instance.inputDir;
 		float zForce;
-		if (dir.x == 0) { zForce = DirRight(transform.localEulerAngles.y) ? doadgeForce : -doadgeForce; }
-		else { zForce = dir.x > 0 ? doadgeForce : -doadgeForce; }
-		rb.AddForce(0, 0, zForce);
+		if (dir.x == 0) { zForce = DirRight(transform.localEulerAngles.y) ? doadgeSpeed : -doadgeSpeed; }
+		else { zForce = dir.x > 0 ? doadgeSpeed : -doadgeSpeed; }
+		SetVelocity(zForce, 0);
+		//rb.AddForce(0, 0, zForce);
 
 		//Debug.Log($"Zforce:{zForce}");
+	}
+
+	PlayQueue[] jumpQue = new PlayQueue[]
+	{
+		new PlayQueue(){name ="Jump_Start" },
+		new PlayQueue(){name ="Jump_Loop" },
+	};
+	void Jump()
+	{
+		AnimCtrl.PlayQueue(jumpQue);
+		SetVelocity(rb.velocity.z, jumpSpeed);
 	}
 
 
@@ -125,19 +141,28 @@ public class TestState : MonoBehaviour, IEntity
 		rb.velocity = new Vector3(0, y, x);
 	}
 
-	MoveDataComponent movedata;
-	bool inForceDash;
-	void ForceDash()
+	private void FixedUpdate()
 	{
-		if (!inForceDash) { return; }
-
+		CheckGround();
 	}
+
+	void CheckGround()
+	{
+		if (Physics.CheckCapsule(checkLandNode.position, checkLandNode.position + Vector3.down * 0.01f, col.radius, LayerMask.GetMask("Plane")))
+		{
+			IsGround = true;
+			if (CheckAnim("Jump_Loop")) { AnimCtrl.Play("Idle"); }
+		}
+		else
+		{
+			IsGround = false;
+			if (CheckAnim("Idle")) { AnimCtrl.Play("Jump_Loop"); }
+		}
+	}
+
+	//private void OnDrawGizmos()
+	//{
+	//	Gizmos.DrawSphere(checkLandNode.position + Vector3.down * 0.01f, col.radius);
+	//}
 }
 
-struct MoveDataComponent
-{
-	public Vector2 forceDir;
-	public float forcePower;
-	public float forceAttenuation;
-	public float duration;
-}
