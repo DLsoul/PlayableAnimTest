@@ -67,7 +67,9 @@
     <Compile Include="Assets\Scripts\ControlSystems\GravitySystem.cs" />
     <Compile Include="Assets\Scripts\ControlSystems\DealDamageSystem.cs" />
     <Compile Include="Assets\Scripts\Playable\TriggerAction.cs" />
+    <Compile Include="Assets\Scripts\Playable\TestPlayableAssest.cs" />
     <Compile Include="Assets\Scripts\Listener.cs" />
+    <Compile Include="Assets\Scripts\Extensions\FloatExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

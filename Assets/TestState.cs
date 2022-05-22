@@ -60,7 +60,8 @@ public class TestState : MonoBehaviour, IEntity
 			{
 				AnimCtrl.Play("Run_ver_A");
 			}
-			transform.localEulerAngles = new Vector3(0, h < 0 ? 180 : 0, 0);
+			tarFace = h < 0 ? 180 : 0;
+			if (transform.localEulerAngles.y != tarFace) { inRotate = true; }
 			if (m_isRuning || !IsGround)
 			{
 				hSpeed = h > 0 ? runSpeed : -runSpeed;
@@ -69,7 +70,7 @@ public class TestState : MonoBehaviour, IEntity
 		}
 		else
 		{
-			if (m_isRuning) { AnimCtrl.Play("Idle"); hSpeed = 0; Debug.Log("hspeed: 0"); }
+			if (m_isRuning) { AnimCtrl.Play("Idle"); hSpeed = 0; }
 		}
 
 		if (v != 0)
@@ -144,6 +145,26 @@ public class TestState : MonoBehaviour, IEntity
 	private void FixedUpdate()
 	{
 		CheckGround();
+		CheckFaceTo();
+	}
+
+	float rotateSpeed = 1500;
+	float tarFace;
+	bool inRotate;
+	void CheckFaceTo()
+	{
+		if (inRotate)
+		{
+			var curEu = transform.localEulerAngles;
+			bool addORsub = tarFace > curEu.y;
+			curEu.y += Time.fixedDeltaTime * rotateSpeed * (addORsub ? 1 : -1);
+			if ((curEu.y >= tarFace && addORsub) || (!addORsub && curEu.y <= tarFace))
+			{
+				curEu.y = tarFace;
+				inRotate = false;
+			}
+			transform.localEulerAngles = curEu;
+		}
 	}
 
 	void CheckGround()

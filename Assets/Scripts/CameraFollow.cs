@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using FloatExtensions;
 public class CameraFollow : MonoBehaviour
 {
 	public Transform target;
@@ -16,6 +16,15 @@ public class CameraFollow : MonoBehaviour
 	void Update()
 	{
 		Vector3 tarPos = target.position;
-		transform.position = tarPos + biaPos;
+		transform.position = GetSimiler(transform.position, tarPos) + biaPos;
+	}
+
+	Vector3 GetSimiler(Vector3 basep, Vector3 tarp, float margin = 0)
+	{
+		var ans = tarp;
+		if (tarp.x.IsEqual(basep.x, margin)) { ans.x = basep.x; }
+		if (tarp.y.IsEqual(basep.y, margin)) { ans.y = basep.y; }
+		if (tarp.z.IsEqual(basep.z, margin)) { ans.z = basep.z; }
+		return ans;
 	}
 }
