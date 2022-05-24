@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEditor;
-using UnityEngine;
 
-public class Listener
+namespace Facade
 {
-	public Listener()
+	public class ManipulativeFacade
 	{
-
-	}
-
-	void Onchange()
-	{
-
+		public static Func<IManipulativeMod> GotManipulativeMod;
 	}
 }
+
 

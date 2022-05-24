@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestState : MonoBehaviour, IEntity
+public class TestState : ManipulativeRegisterMonoEntity, IEntity
 {
 	public Animator animator;
 	private Rigidbody rb;
@@ -15,6 +15,12 @@ public class TestState : MonoBehaviour, IEntity
 	private CapsuleCollider col;
 
 	public bool IsGround;
+
+
+	Vector2 cacheInputDir;
+	bool m_isRuning { get { return AnimCtrl.GetCurClipName().Equals("Run_ver_A"); } }
+	bool m_animIsJumping { get { return AnimCtrl.GetCurClipName().Equals("Jump_Loop"); } }
+
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -25,25 +31,22 @@ public class TestState : MonoBehaviour, IEntity
 		AnimCtrl.Init(animator, this);
 	}
 
-	private void OnEnable()
-	{
-		InputSystem.Instance.OnAxis += Move;
-		InputSystem.Instance.OnXKeyDown += AttackX;
-		InputSystem.Instance.OnYKeyDown += AttackY;
-		InputSystem.Instance.OnAKeyDown += Doadge;
-		InputSystem.Instance.OnBKeyDown += Jump;
-	}
-
-	bool m_isRuning { get { return AnimCtrl.GetCurClipName().Equals("Run_ver_A"); } }
-	bool m_animIsJumping { get { return AnimCtrl.GetCurClipName().Equals("Jump_Loop"); } }
-	private void OnDisable()
-	{
-		InputSystem.Instance.OnAxis -= Move;
-		InputSystem.Instance.OnXKeyDown -= AttackX;
-		InputSystem.Instance.OnYKeyDown -= AttackY;
-		InputSystem.Instance.OnAKeyDown -= Doadge;
-		InputSystem.Instance.OnBKeyDown -= Jump;
-	}
+	//private void OnEnable()
+	//{
+	//	InputSystem.Instance.OnAxis += Move;
+	//	InputSystem.Instance.OnXKeyDown += AttackX;
+	//	InputSystem.Instance.OnYKeyDown += AttackY;
+	//	InputSystem.Instance.OnAKeyDown += Doadge;
+	//	InputSystem.Instance.OnBKeyDown += Jump;
+	//}
+	//private void OnDisable()
+	//{
+	//	InputSystem.Instance.OnAxis -= Move;
+	//	InputSystem.Instance.OnXKeyDown -= AttackX;
+	//	InputSystem.Instance.OnYKeyDown -= AttackY;
+	//	InputSystem.Instance.OnAKeyDown -= Doadge;
+	//	InputSystem.Instance.OnBKeyDown -= Jump;
+	//}
 
 	bool CheckAnim(string name)
 	{
@@ -97,7 +100,6 @@ public class TestState : MonoBehaviour, IEntity
 
 	void AttackY()
 	{
-
 		AnimCtrl.Play($"Attack_7Combo_{ytick + 1}");
 		++ytick;
 		ytick %= 7;
@@ -107,7 +109,7 @@ public class TestState : MonoBehaviour, IEntity
 	{
 		AnimCtrl.Play($"Dodge_Front");
 
-		var dir = InputSystem.Instance.inputDir;
+		var dir = cacheInputDir;
 		float zForce;
 		if (dir.x == 0) { zForce = DirRight(transform.localEulerAngles.y) ? doadgeSpeed : -doadgeSpeed; }
 		else { zForce = dir.x > 0 ? doadgeSpeed : -doadgeSpeed; }
@@ -142,22 +144,23 @@ public class TestState : MonoBehaviour, IEntity
 		rb.velocity = new Vector3(0, y, x);
 	}
 
-	private void FixedUpdate()
+
+	public override void OnFixUpdate(float deltaTime)
 	{
 		CheckGround();
-		CheckFaceTo();
+		CheckFaceTo(deltaTime);
 	}
 
 	float rotateSpeed = 1500;
 	float tarFace;
 	bool inRotate;
-	void CheckFaceTo()
+	void CheckFaceTo(float deltaTime)
 	{
 		if (inRotate)
 		{
 			var curEu = transform.localEulerAngles;
 			bool addORsub = tarFace > curEu.y;
-			curEu.y += Time.fixedDeltaTime * rotateSpeed * (addORsub ? 1 : -1);
+			curEu.y += deltaTime * rotateSpeed * (addORsub ? 1 : -1);
 			if ((curEu.y >= tarFace && addORsub) || (!addORsub && curEu.y <= tarFace))
 			{
 				curEu.y = tarFace;
@@ -180,6 +183,32 @@ public class TestState : MonoBehaviour, IEntity
 			if (CheckAnim("Idle")) { AnimCtrl.Play("Jump_Loop"); }
 		}
 	}
+
+	#region ²Ù×÷½Ó¿Ú
+
+	public override void OnMove(Vector2 dir)
+	{
+		cacheInputDir = dir;
+		Move(dir.x, dir.y);
+	}
+	public override void OnAttackX()
+	{
+		AttackX();
+	}
+	public override void OnAttackY()
+	{
+		AttackY();
+	}
+	public override void OnKeyADown()
+	{
+		Jump();
+	}
+
+	public override void OnKeyBDown()
+	{
+		Doadge();
+	}
+	#endregion
 
 	//private void OnDrawGizmos()
 	//{
