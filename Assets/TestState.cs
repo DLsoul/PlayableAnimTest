@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class TestState : ManipulativeRegisterMonoEntity, IEntity
 {
 	public Animator animator;
 	private Rigidbody rb;
 	public PlayableAnimCtrl AnimCtrl { get; private set; }
-
 	public float runSpeed;
 	public float doadgeSpeed;
 	public float jumpSpeed;
 	public Transform checkLandNode;
 	private CapsuleCollider col;
+	private PlayableDirector director;
 
 	public bool IsGround;
 
@@ -24,6 +25,7 @@ public class TestState : ManipulativeRegisterMonoEntity, IEntity
 	// Start is called before the first frame update
 	void Start()
 	{
+		director = GetComponent<PlayableDirector>();
 		col = GetComponent<CapsuleCollider>();
 		rb = GetComponent<Rigidbody>();
 		rb.useGravity = false;
@@ -31,22 +33,10 @@ public class TestState : ManipulativeRegisterMonoEntity, IEntity
 		AnimCtrl.Init(animator, this);
 	}
 
-	//private void OnEnable()
-	//{
-	//	InputSystem.Instance.OnAxis += Move;
-	//	InputSystem.Instance.OnXKeyDown += AttackX;
-	//	InputSystem.Instance.OnYKeyDown += AttackY;
-	//	InputSystem.Instance.OnAKeyDown += Doadge;
-	//	InputSystem.Instance.OnBKeyDown += Jump;
-	//}
-	//private void OnDisable()
-	//{
-	//	InputSystem.Instance.OnAxis -= Move;
-	//	InputSystem.Instance.OnXKeyDown -= AttackX;
-	//	InputSystem.Instance.OnYKeyDown -= AttackY;
-	//	InputSystem.Instance.OnAKeyDown -= Doadge;
-	//	InputSystem.Instance.OnBKeyDown -= Jump;
-	//}
+	private void OnDestroy()
+	{
+		AnimCtrl.Destroy();
+	}
 
 	bool CheckAnim(string name)
 	{

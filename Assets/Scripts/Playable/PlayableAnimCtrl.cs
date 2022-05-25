@@ -289,6 +289,11 @@ public class PlayableAnimCtrl
 		AnimationPlayableUtilities.Play(animator, behaviour.playable, graph);
 	}
 
+	public void Destroy()
+	{
+		graph.Destroy();
+	}
+
 	public void Play(string _name = null, float _startTime = 0)
 	{
 		behaviour.Play(_name, _startTime);

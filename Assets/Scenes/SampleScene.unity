@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 307512474}
   - component: {fileID: 307512473}
   m_Layer: 0
-  m_Name: TestScript
+  m_Name: TestScriptObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -352,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35c1cc6794288cd4a8186814faf150cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testScript: {fileID: 0}
+  testScript: {fileID: 11400000, guid: 6a7a6d2ccd2a2b3438ec39c8dc3b87fc, type: 2}
 --- !u!4 &307512474
 Transform:
   m_ObjectHideFlags: 0
@@ -4409,7 +4409,7 @@ PlayableDirector:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1745172256}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: 4337770d0b9c1bd46874384c1fcd6700, type: 2}
   m_InitialState: 1
