@@ -281,7 +281,8 @@ public class PlayableAnimCtrl
 	{
 		BaseEntity = _entity;
 		animator = _animator;
-		graph = PlayableGraph.Create();
+		graph = PlayableGraph.Create("AnimCtrl");
+		//graph = animator.playableGraph;
 		var template = new AnimBehaviour();
 		var behaviourPlayable = ScriptPlayable<AnimBehaviour>.Create(graph, template, 1);
 		behaviour = behaviourPlayable.GetBehaviour();
