@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TimerMod : BaseMoudle
+public class TimerMod : BaseMoudle, IUpdate
 {
 	private ItemContainer<ITimer> globalTimers = new ItemContainer<ITimer>();
 	private ItemContainer<ITimer> sceneTimers = new ItemContainer<ITimer>();
 	public override void Init(object _parames = null)
 	{
 		base.Init(_parames);
-		GlobalGameManager.Instance.OnUpdateDo += OnUpdateDo;
 		SceneManager.sceneUnloaded += OnSceneUnLoaded;
 		Facade.TimerFacade.StartOnceTimer += StartOnceTimer;
 		Facade.TimerFacade.RemoveTimer += RemoveTimer;
@@ -24,19 +23,6 @@ public class TimerMod : BaseMoudle
 		foreach (var item in sceneTimers)
 		{
 			item.Kill();
-		}
-	}
-
-	private void OnUpdateDo(float deltaTime)
-	{
-		foreach (var item in globalTimers)
-		{
-			item.OnUpdate(deltaTime);
-		}
-
-		foreach (var item in sceneTimers)
-		{
-			item.OnUpdate(deltaTime);
 		}
 	}
 
@@ -64,6 +50,19 @@ public class TimerMod : BaseMoudle
 		else
 		{
 			sceneTimers.Remove(timer);
+		}
+	}
+
+	public void OnUpdate(float deltaTime)
+	{
+		foreach (var item in globalTimers)
+		{
+			item.OnUpdate(deltaTime);
+		}
+
+		foreach (var item in sceneTimers)
+		{
+			item.OnUpdate(deltaTime);
 		}
 	}
 }
